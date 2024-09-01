@@ -1,0 +1,93 @@
+#include <iostream>
+#include <cstdlib> // For rand()
+
+using namespace std;
+
+int main() {
+    const string words[] = {"computer", "science", "electrical", "engineering", "programming"};
+    const int numWords = 5; // Number of words in the array
+
+    // Use rand() to choose a random index
+    int randomIndex = rand() % numWords;
+    string word = words[randomIndex];
+    int wordLength = word.length();
+    
+    bool guessed[wordLength] = {false};
+    int strikes = 0;
+    const int maxStrikes = 5;
+    char guess;
+
+    cout << "Welcome to Hangman!" << endl;
+    cout << "Try to guess the word." << endl;
+
+    while (strikes < maxStrikes) {
+        cout << "\nCurrent word: ";
+        for (int i = 0; i < wordLength; ++i) {
+            if (guessed[i]) {
+                cout << word[i];
+            } else {
+                cout << '-';
+            }
+        }
+        cout << endl;
+
+        cout << "Guess a letter: ";
+        cin >> guess;
+
+        // Convert uppercase guess to lowercase
+        if (guess >= 'A' && guess <= 'Z') {
+            guess = guess + ('a' - 'A');
+        }
+
+        if (guess < 'a' || guess > 'z') {
+            cout << "Invalid input. Please enter a single letter." << endl;
+            continue;
+        }
+
+        bool correct = false;
+        bool positions[wordLength] = {false};
+
+        for (int i = 0; i < wordLength; ++i) {
+            if (word[i] == guess) {
+                guessed[i] = true;
+                positions[i] = true;
+                correct = true;
+            }
+        }
+
+        if (correct) {
+            cout << "You guessed correctly! The letter '" << guess << "' is in the word at positions: ";
+            bool first = true;
+            for (int i = 0; i < wordLength; ++i) {
+                if (positions[i]) {
+                    if (!first) cout << ", ";
+                    cout << (i + 1);
+                    first = false;
+                }
+            }
+            cout << "." << endl;
+        } else {
+            strikes++;
+            cout << "Incorrect guess. You have " << (maxStrikes - strikes) << " strikes left." << endl;
+        }
+
+        bool wordGuessed = true;
+        for (int i = 0; i < wordLength; ++i) {
+            if (!guessed[i]) {
+                wordGuessed = false;
+                break;
+            }
+        }
+
+        if (wordGuessed) {
+            cout << "Congratulations! You guessed the word: " << word << endl;
+            break;
+        }
+    }
+
+    if (strikes >= maxStrikes) {
+        cout << "Sorry, you've run out of strikes. The word was: " << word << endl;
+    }
+
+    return 0;
+}
